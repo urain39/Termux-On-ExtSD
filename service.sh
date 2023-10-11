@@ -1,3 +1,4 @@
+MOD="${0%/*}"
 BLK="/dev/block/mmcblk1p2"
 DIR="/data/data/com.termux"
 TMP="$DIR/files/usr/tmp"
@@ -20,10 +21,11 @@ if [ -b "$BLK" ] && [ -d "$DIR" ]; then
     *)
       # Manual repair required
       stop
-      reboot "recovery"
+      touch "$MOD/disable"
+      reboot
       ;;
   esac
-  mount -o "noatime,commit=600" "$BLK" "$DIR"
+  mount -o "noatime,commit=900" "$BLK" "$DIR"
 
   rm -rf "$TMP"
   mkdir -p "$TMP"

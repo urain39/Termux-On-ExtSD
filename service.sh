@@ -1,8 +1,9 @@
 MOD="${0%/*}"
 BLK="/dev/block/mmcblk1p2"
 DIR="/data/data/com.termux"
-TMP="$DIR/files/usr/tmp"
-RUN="$DIR/files/usr/var/run"
+USR="$DIR/files/usr"
+TMP="$USR/tmp"
+RUN="$USR/var/run"
 
 if [ -b "$BLK" ] && [ -d "$DIR" ]; then
   OWN="$(stat -c "%u:%g" "$DIR")"
@@ -27,12 +28,13 @@ if [ -b "$BLK" ] && [ -d "$DIR" ]; then
   esac
   mount -o "noatime,commit=900" "$BLK" "$DIR"
 
-  rm -rf "$TMP"
-  mkdir -p "$TMP"
-  mount -t "tmpfs" "tmpfs" "$TMP"
-  rm -rf "$RUN"
-  mkdir -p "$RUN"
-  mount -t "tmpfs" "tmpfs" "$RUN"
+  if [ -d "$USR" ]; then
+    # Initialize required
+    rm -rf "$RUN" "$TMP"
+    mkdir -p "$RUN" "$TMP"
+    mount -t "tmpfs" "tmpfs" "$RUN"
+    mount -t "tmpfs" "tmpfs" "$TMP"
+  fi
 
   chown -R "$OWN" "$DIR"
   chmod "$PERM" "$DIR"
